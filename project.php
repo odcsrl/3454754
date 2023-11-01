@@ -106,6 +106,15 @@ if (!$project) {
         <input class="form-check-input" type="radio" name="case_option" id="caseLowercase" value="lowercase" required>
         <label class="form-check-label" for="caseLowercase">All Lowercase Letters</label>
     </div>
+
+    <label><input type="checkbox" name="directions[]" value="vertical"> Vertical</label>
+    <label><input type="checkbox" name="directions[]" value="horizontal"> Horizontal</label>
+    <label><input type="checkbox" name="directions[]" value="diagonal_tl_br"> Diagonal (Top-Left to Bottom-Right)</label>
+    <label><input type="checkbox" name="directions[]" value="diagonal_tr_bl"> Diagonal (Top-Right to Bottom-Left)</label>
+    <label><input type="checkbox" name="directions[]" value="reverse_vertical"> Reverse Vertical</label>
+    <label><input type="checkbox" name="directions[]" value="reverse_horizontal"> Reverse Horizontal</label>
+    <label><input type="checkbox" name="directions[]" value="reverse_diagonal_bl_tr"> Reverse Diagonal (Bottom-Left to Top-Right)</label>
+    <label><input type="checkbox" name="directions[]" value="reverse_diagonal_br_tl"> Reverse Diagonal (Bottom-Right to Top-Left)</label>
             <!-- Font Selection Dropdown -->
         <div class="mb-3">
             <label for="fontFamily" class="form-label">Select Font</label>
