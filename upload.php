@@ -2,6 +2,22 @@
 session_start();
 include 'includes/db.php';
 
+$possibleDirections = [
+    'vertical' => ['x' => 0, 'y' => 1],
+    'horizontal' => ['x' => 1, 'y' => 0],
+    'diagonal_tl_br' => ['x' => 1, 'y' => 1],
+    'diagonal_tr_bl' => ['x' => -1, 'y' => 1],
+    'reverse_vertical' => ['x' => 0, 'y' => -1],
+    'reverse_horizontal' => ['x' => -1, 'y' => 0],
+    'reverse_diagonal_bl_tr' => ['x' => -1, 'y' => -1],
+    'reverse_diagonal_br_tl' => ['x' => 1, 'y' => -1]
+];
+
+$selectedDirections = $_POST['directions'] ?? [];
+$filteredDirections = array_filter($possibleDirections, function($key) use ($selectedDirections) {
+    return in_array($key, $selectedDirections);
+}, ARRAY_FILTER_USE_KEY);
+
 $uploadDirectory = __DIR__ . '/uploads/';
 
 if (!file_exists($uploadDirectory)) {
@@ -152,44 +168,38 @@ function generateSolution($words, $gridAcross, $gridDown) {
 }
 
 
-function getValidDirection($grid, $word, $gridAcross, $gridDown) {
-$possibleDirections = [
-    'vertical' => ['x' => 0, 'y' => 1],
-    'horizontal' => ['x' => 1, 'y' => 0],
-    'diagonal_tl_br' => ['x' => 1, 'y' => 1],
-    'diagonal_tr_bl' => ['x' => -1, 'y' => 1],
-    'reverse_vertical' => ['x' => 0, 'y' => -1],
-    'reverse_horizontal' => ['x' => -1, 'y' => 0],
-    'reverse_diagonal_bl_tr' => ['x' => -1, 'y' => -1],
-    'reverse_diagonal_br_tl' => ['x' => 1, 'y' => -1]
-];
+function getValidDirection($word, $grid) {
+    global $filteredDirections; // Use the filtered directions
 
-    shuffle($possibleDirections);
-
-    foreach ($possibleDirections as $direction) {
+    shuffle($filteredDirections);
+    foreach ($filteredDirections as $key => $direction) {
         $valid = true;
+        $x = rand(0, count($grid) - 1);
+        $y = rand(0, count($grid[0]) - 1);
+        $length = strlen($word);
 
-        for ($y = 0; $y <= $gridDown - strlen($word); $y++) {
-            for ($x = 0; $x <= $gridAcross - strlen($word); $x++) {
-                $valid = true;
-                for ($i = 0; $i < strlen($word); $i++) {
-                    $checkX = $x + $i * $direction['x'];
-                    $checkY = $y + $i * $direction['y'];
-                    if (!isset($grid[$checkY][$checkX]) || ($grid[$checkY][$checkX] !== null && $grid[$checkY][$checkX] !== $word[$i])) {
-                        $valid = false;
-                        break;
-                    }
-                }
+        // Check if word fits in the grid based on direction
+        if ($x + $direction['x'] * $length < 0 || $x + $direction['x'] * $length > count($grid) ||
+            $y + $direction['y'] * $length < 0 || $y + $direction['y'] * $length > count($grid[0])) {
+            $valid = false;
+        }
 
-                if ($valid) {
-                    return $direction;
-                }
+        // Check if path is clear
+        for ($i = 0; $i < $length; $i++) {
+            if ($valid && $grid[$x + $direction['x'] * $i][$y + $direction['y'] * $i] != '.' &&
+                $grid[$x + $direction['x'] * $i][$y + $direction['y'] * $i] != $word[$i]) {
+                $valid = false;
             }
+        }
+
+        if ($valid) {
+            return $direction;
         }
     }
 
-    return null;
+    return false;
 }
+
 
 function placeWord(&$grid, $word, $startX, $startY, $direction, $option) {
     $x = $startX;
