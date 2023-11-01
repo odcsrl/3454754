@@ -153,12 +153,16 @@ function generateSolution($words, $gridAcross, $gridDown) {
 
 
 function getValidDirection($grid, $word, $gridAcross, $gridDown) {
-    $possibleDirections = [
-        ['x' => 0, 'y' => 1],
-        ['x' => 1, 'y' => 0],
-        ['x' => 1, 'y' => 1],
-        ['x' => -1, 'y' => 1],
-    ];
+$possibleDirections = [
+    'vertical' => ['x' => 0, 'y' => 1],
+    'horizontal' => ['x' => 1, 'y' => 0],
+    'diagonal_tl_br' => ['x' => 1, 'y' => 1],
+    'diagonal_tr_bl' => ['x' => -1, 'y' => 1],
+    'reverse_vertical' => ['x' => 0, 'y' => -1],
+    'reverse_horizontal' => ['x' => -1, 'y' => 0],
+    'reverse_diagonal_bl_tr' => ['x' => -1, 'y' => -1],
+    'reverse_diagonal_br_tl' => ['x' => 1, 'y' => -1]
+];
 
     shuffle($possibleDirections);
 
